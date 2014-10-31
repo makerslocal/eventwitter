@@ -37,24 +37,31 @@ function parseData(err, data){
 function scheduleAlert(ev, alertTime){
   var now = moment();
   if (alertTime > now && alertTime - pollInt < now) {
-    console.log(util.format('Schedule: %s %s for alerting at %s',
-      ev.summary,
-      moment(ev.start).format(),
-      alertTime.format()));
+    console.log(util.format('[DEBUG] - Schedule "%s" - "%s"',
+      alertTime.format("LT"),
+      genEventMsg(ev)));
      
     setTimeout(function(){
-      sendIrc(ev);
-      sendTweet(ev);
+      var msg = genEventMsg(ev);
+      sendIrc(msg);
+      sendTweet(msg);
     }, alertTime - now);      
   }
 }
 
-function sendIrc(ev){
-  console.log("[DEBUG] - Sending irc");
+function genEventMsg(ev){
+  var msg = util.format('%s will be happending %s. Check out %s for more info.',
+    ev.summary,
+    moment(ev.start).format("dddd [at] LT"),
+    ev.url);
+
+  return msg
+}
+
+function sendIrc(msg){
+  console.log("[DEBUG] - Sending irc - "+msg);
   var post_data = JSON.stringify({
-      'message' : util.format('New Event: %s will be happending at %s',
-        ev.summary,
-        moment(ev.start).format()),
+      'message' : msg,
       'channel': '##rqtest',
       'isaction': false,
       'key' : '13371234'
@@ -71,9 +78,9 @@ function sendIrc(ev){
   );
 }
 
-function sendTweet(ev){
+function sendTweet(msg){
   console.log("[DEBUG] - Sending tweet");
-  printEvent(ev);
+  console.log(msg);
 }
 
 function printEvent(ev){
