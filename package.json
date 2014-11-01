@@ -1,0 +1,25 @@
+{
+  "name": "eventwitter",
+  "version": "1.0.0",
+  "description": "ical to twitter, redqueen",
+  "main": "index.js",
+  "dependencies": {
+    "moment": "^2.8.3",
+    "request": "^2.47.0",
+    "ical": "^0.3.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/makerslocal/eventwitter.git"
+  },
+  "author": "Nathan W.",
+  "license": "GPLv3",
+  "bugs": {
+    "url": "https://github.com/makerslocal/eventwitter/issues"
+  },
+  "homepage": "https://github.com/makerslocal/eventwitter"
+}

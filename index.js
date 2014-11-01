@@ -1,19 +1,17 @@
-var util = require('util')
-var ical = require('ical')
-var moment = require('moment')
+var config = require('./config');
+var util = require('util');
+var ical = require('ical');
+var moment = require('moment');
 var request = require('request');
 
-// 1 Hour
-var pollInt = 60 * 60 * 1001;
-
 //ical.fromURL('http://256.makerslocal.org/calendar.ics', {}, parseData);
-parseData('',ical.parseFile('/home/jimshoe/dev/makerslocal/node_ical_twitter/calendar.ics'));
+parseData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
 
 setInterval(function(){
     console.log(util.format('Parsing ical @ %s\n', moment().format())); 
-    parseData('',ical.parseFile('/home/jimshoe/dev/makerslocal/node_ical_twitter/calendar.ics'));
+    parseData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
     //ical.fromURL('http://256.makerslocal.org/calendar.ics', {}, parseData);
-}, pollInt);      
+}, config.pollInt);      
 
 function parseData(err, data){
   for (var k in data){
@@ -36,7 +34,7 @@ function parseData(err, data){
 
 function scheduleAlert(ev, alertTime){
   var now = moment();
-  if (alertTime > now && alertTime - pollInt < now) {
+  if (alertTime > now && alertTime - config.pollInt < now) {
     console.log(util.format('[DEBUG] - Schedule "%s" - "%s"',
       alertTime.format("LT"),
       genEventMsg(ev)));
@@ -54,7 +52,6 @@ function genEventMsg(ev){
     ev.summary,
     moment(ev.start).format("dddd [at] LT"),
     ev.url);
-
   return msg
 }
 
@@ -62,19 +59,19 @@ function sendIrc(msg){
   console.log("[DEBUG] - Sending irc - "+msg);
   var post_data = JSON.stringify({
       'message' : msg,
-      'channel': '##rqtest',
-      'isaction': false,
-      'key' : '13371234'
+      'channel': config.rq.channel,
+      'isaction': config.rq.isaction,
+      'key' : config.rq.key
   });
+
   request.post(
       { headers:{'Content-Type' : 'application/json'},
         url:'https://restirc.tylercrumpton.com/relay',
         body: post_data
       },
-        function (error, response, body) {
-              console.log(response.statusCode);
-        } 
-   
+      function (error, response, body) {
+        console.log(response.statusCode);
+      } 
   );
 }
 
