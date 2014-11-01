@@ -1,0 +1,12 @@
+{
+  "name": "eventwitter",
+  "version": "0.0.1",
+  "dependencies": {
+    "ical": "*",
+    "moment": "*",
+    "underscore": "*"
+  },
+  "scripts": {
+    "test": "make test"
+  }
+}
