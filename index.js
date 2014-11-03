@@ -3,6 +3,7 @@ var util = require('util');
 var ical = require('ical');
 var moment = require('moment');
 var request = require('request');
+var _ = require('lodash');
 
 //ical.fromURL('http://256.makerslocal.org/calendar.ics', {}, parseData);
 parseData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
@@ -18,15 +19,9 @@ function parseData(err, data){
     if (data.hasOwnProperty(k)) {
       var ev = data[k]
       if (ev.type == "VEVENT" ){
-        var alertTimes = [
-            moment(ev.start), 
-            moment(ev.start).subtract(1, 'hour'), 
-            moment(ev.start).subtract(1, 'day'),
-            moment(ev.start).subtract(7, 'day')
-            ]
-        for (i = 0; i < alertTimes.length; i++) { 
-          scheduleAlert(ev, alertTimes[i]);
-        }
+        _.forEach(config.alertSchedule, function(alertTime) {
+          scheduleAlert(ev, moment(ev.start).subtract(alertTime));
+        });
       }
     }
   }
@@ -48,9 +43,25 @@ function scheduleAlert(ev, alertTime){
 }
 
 function genEventMsg(ev){
+  var hour = moment().add(1, 'hour');
+  var week = moment().add(1, 'week');
+  var time = moment(ev.start);
+  var eventTime;
+
+  if (time.isBefore(hour)){
+    eventTime = "very shortly";
+  }
+  else if (time.isBefore(week)){
+    eventTime = time.calendar();
+  }
+  else {
+    eventTime = "on " + time.format("l [at] LT");
+  }
+
+
   var msg = util.format('%s will be happending %s. Check out %s for more info.',
     ev.summary,
-    moment(ev.start).format("dddd [at] LT"),
+    eventTime,
     ev.url);
   return msg
 }
