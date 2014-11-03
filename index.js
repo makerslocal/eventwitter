@@ -19,8 +19,8 @@ function parseData(err, data){
     if (data.hasOwnProperty(k)) {
       var ev = data[k]
       if (ev.type == "VEVENT" ){
-        _.forEach(config.alertSchedule, function(alertTime) {
-          scheduleAlert(ev, moment(ev.start).subtract(alertTime));
+        _.forEach(config.alertSchedule, function(alertSchedule) {
+          scheduleAlert(ev, moment(ev.start).subtract(alertSchedule));
         });
       }
     }
@@ -30,44 +30,45 @@ function parseData(err, data){
 function scheduleAlert(ev, alertTime){
   var now = moment();
   if (alertTime > now && alertTime - config.pollInt < now) {
-    console.log(util.format('[DEBUG] - Schedule "%s" - "%s"',
-      alertTime.format("LT"),
-      genEventMsg(ev)));
-     
+    var msg = genEventMsg(ev);
     setTimeout(function(){
-      var msg = genEventMsg(ev);
       sendIrc(msg);
       sendTweet(msg);
     }, alertTime - now);      
+
+  console.log(util.format('[DEBUG] - Schedule %s - "%s"',
+      alertTime.format("LT"),
+      msg));
   }
 }
 
 function genEventMsg(ev){
   var hour = moment().add(1, 'hour');
   var week = moment().add(1, 'week');
-  var time = moment(ev.start);
-  var eventTime;
+  var eventStart = moment(ev.start);
+  var msg;
 
-  if (time.isBefore(hour)){
-    eventTime = "very shortly";
+  if (eventStart.isBefore(hour)){
+    return util.format('%s is starting right now! Check out %s for more info.',
+                       ev.summary,
+                       ev.url);
   }
-  else if (time.isBefore(week)){
-    eventTime = time.calendar();
+  else if (eventStart.isBefore(week)){
+    return util.format('%s is starting %s. Check out %s for more info.',
+                       ev.summary,
+                       eventStart.calendar(),
+                       ev.url);
   }
   else {
-    eventTime = "on " + time.format("l [at] LT");
+    return util.format('%s is starting on %s Check out %s for more info.',
+                       ev.summary,
+                       eventStart.format("l [at] LT"),
+                       ev.url);
   }
-
-
-  var msg = util.format('%s will be happending %s. Check out %s for more info.',
-    ev.summary,
-    eventTime,
-    ev.url);
-  return msg
 }
 
 function sendIrc(msg){
-  console.log("[DEBUG] - Sending irc - "+msg);
+  console.log("[DEBUG] - Sending irc   - "+msg);
   var post_data = JSON.stringify({
       'message' : msg,
       'channel': config.rq.channel,
@@ -87,8 +88,7 @@ function sendIrc(msg){
 }
 
 function sendTweet(msg){
-  console.log("[DEBUG] - Sending tweet");
-  console.log(msg);
+  console.log("[DEBUG] - Sending tweet - "+msg);
 }
 
 function printEvent(ev){

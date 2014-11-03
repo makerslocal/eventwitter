@@ -1,7 +1,7 @@
 module.exports = {
   pollInt : 60 * 60 * 1000, // 1 hour
 
-  alertSchedule : [
+  alertSchedule : [ // http://momentjs.com/docs/#/parsing/defaults/
     { hour  : 0 },
     { hour  : 1 },
     { day   : 1 },
