@@ -4,6 +4,7 @@ var ical = require('ical');
 var moment = require('moment');
 var request = require('request');
 var _ = require('lodash');
+var format = require("string-template")
 
 //ical.fromURL('http://256.makerslocal.org/calendar.ics', {}, parseData);
 parseData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
@@ -46,24 +47,37 @@ function genEventMsg(ev){
   var hour = moment().add(1, 'hour');
   var week = moment().add(1, 'week');
   var eventStart = moment(ev.start);
-  var msg;
+  var eventEnd = moment(ev.end);
 
   if (eventStart.isBefore(hour)){
-    return util.format('%s is starting right now! Check out %s for more info.',
-                       ev.summary,
-                       ev.url);
+    return format(_.sample(config.alertMessages.now), {
+                  summary     : ev.summary,
+                  url         : ev.url,
+                  start       : eventStart.calendar(),
+                  end         : ev.end,
+                  location    : ev.location,
+                  description : ev.description
+                  })
   }
   else if (eventStart.isBefore(week)){
-    return util.format('%s is starting %s. Check out %s for more info.',
-                       ev.summary,
-                       eventStart.calendar(),
-                       ev.url);
+    return format(_.sample(config.alertMessages.week), {
+                  summary     : ev.summary,
+                  url         : ev.url,
+                  start       : eventStart.calendar(),
+                  end         : eventEnd.calendar(),
+                  location    : ev.location,
+                  description : ev.description
+                  })
   }
   else {
-    return util.format('%s is starting on %s Check out %s for more info.',
-                       ev.summary,
-                       eventStart.format("l [at] LT"),
-                       ev.url);
+    return format(_.sample(config.alertMessages.longer),{
+                  summary     : ev.summary,
+                  url         : ev.url,
+                  start       : eventStart.format("l [at] LT"),
+                  end         : eventEnd.format("l [at] LT"),
+                  location    : ev.location,
+                  description : ev.description
+                  })
   }
 }
 
