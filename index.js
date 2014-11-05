@@ -30,8 +30,8 @@ function scheduleAlert(ev, alertTime){
   if (alertTime > now && alertTime - config.pollInt < now) {
     var msg = genEventMsg(ev);
     setTimeout(function(){
-      sendIrc(msg);
-      sendTweet(msg);
+      if (config.enableIrc) sendIrc(msg);
+      if (config.enableTwitter) sendTweet(msg);
     }, alertTime - now);      
 
   console.log(util.format('[DEBUG] - Schedule %s - "%s"',
@@ -54,7 +54,7 @@ function genEventMsg(ev){
                   end         : ev.end,
                   location    : ev.location,
                   description : ev.description
-                  })
+                  });
   }
   else if (eventStart.isBefore(week)){
     return format(_.sample(config.alertMessages.week), {
@@ -64,7 +64,7 @@ function genEventMsg(ev){
                   end         : eventEnd.calendar(),
                   location    : ev.location,
                   description : ev.description
-                  })
+                  });
   }
   else {
     return format(_.sample(config.alertMessages.longer),{
@@ -74,7 +74,7 @@ function genEventMsg(ev){
                   end         : eventEnd.format("l [at] LT"),
                   location    : ev.location,
                   description : ev.description
-                  })
+                  });
   }
 }
 

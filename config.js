@@ -1,4 +1,7 @@
 module.exports = {
+  enableIrc : true,
+  enableTwitter: false,
+
   pollInt : 60 * 60 * 1000, // 1 hour
 
   alertSchedule : [ // http://momentjs.com/docs/#/parsing/defaults/
