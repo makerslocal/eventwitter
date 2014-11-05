@@ -5,6 +5,7 @@ var moment = require('moment');
 var request = require('request');
 var _ = require('lodash');
 var format = require("string-template");
+var twitter = require('twitter');
 
 //ical.fromURL('http://256.makerslocal.org/calendar.ics', {}, parseData);
 parseData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
@@ -100,6 +101,15 @@ function sendIrc(msg){
 
 function sendTweet(msg){
   console.log("[DEBUG] - Sending tweet - "+msg);
+  var twit = new twitter({
+        consumer_key: config.twitter.consumer_key,
+        consumer_secret: config.twitter.consumer_secret,
+        access_token_key: config.twitter.access_token_key,
+        access_token_secret: config.twitter.access_token_secret
+  });
+  twit.updateStatus(msg, function (data) {
+    console.log(util.inspect(data));
+  });
 }
 
 function printEvent(ev){
