@@ -4,7 +4,7 @@ var ical = require('ical');
 var moment = require('moment');
 var request = require('request');
 var _ = require('lodash');
-var format = require("string-template")
+var format = require("string-template");
 
 //ical.fromURL('http://256.makerslocal.org/calendar.ics', {}, parseData);
 parseData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
@@ -16,16 +16,13 @@ setInterval(function(){
 }, config.pollInt);      
 
 function parseData(err, data){
-  for (var k in data){
-    if (data.hasOwnProperty(k)) {
-      var ev = data[k]
+  _.forEach(data, function(ev) {
       if (ev.type == "VEVENT" ){
         _.forEach(config.alertSchedule, function(alertSchedule) {
           scheduleAlert(ev, moment(ev.start).subtract(alertSchedule));
         });
       }
-    }
-  }
+  });
 }
 
 function scheduleAlert(ev, alertTime){
