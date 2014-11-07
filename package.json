@@ -6,7 +6,7 @@
   "dependencies": {
     "bunyan": "^1.2.1",
     "ical": "^0.3.1",
-    "lodaash": "2.4.1",
+    "lodash": "2.4.1",
     "moment": "^2.8.3",
     "request": "^2.47.0",
     "string-template": "^0.2.0",
