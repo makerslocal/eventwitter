@@ -1,5 +1,5 @@
 module.exports = {
-  enableIrc : true,
+  enableIrc : false,
   enableTwitter: false,
 
   pollInt : 60 * 60 * 1000, // 1 hour

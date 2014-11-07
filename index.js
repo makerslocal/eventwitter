@@ -1,27 +1,31 @@
-var config = require('./config');
 var util = require('util');
+
+var _ = require('lodash');
+var bunyan = require('bunyan');
+var log = bunyan.createLogger({name: 'eventwitter'});
+var format = require("string-template");
 var ical = require('ical');
 var moment = require('moment');
 var request = require('request');
-var _ = require('lodash');
-var format = require("string-template");
 var twitter = require('twitter');
 
-//ical.fromURL('http://256.makerslocal.org/calendar.ics', {}, parseData);
+var config = require('./config');
+
+log.info('Parse ical file');
+//ical.fromURL('http://257.makerslocal.org/calendar.ics', {}, parseData(err, data));
 parseData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
-console.log(format('Parsing ical @ {time}\n', {
-                    time : moment().format()
-                    })); 
 
 setInterval(function(){
-  console.log(format('Parsing ical @ {time}\n', {
-                      time : moment().format()
-                      })); 
+  log.info('Parse ical file');
   parseData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
-  //ical.fromURL('http://256.makerslocal.org/calendar.ics', {}, parseData);
+  //ical.fromURL('http://256.makerslocal.org/calendar.ics', {}, parseData(err, data));
 }, config.pollInt);      
 
 function parseData(err, data){
+  if(err){ 
+    log.info(err);
+    return; 
+  }
   _.forEach(data, function(ev) {
       if (ev.type == "VEVENT" ){
         _.forEach(config.alertSchedule, function(alertSchedule) {
@@ -40,9 +44,7 @@ function scheduleAlert(ev, alertTime){
       if (config.enableTwitter) sendTweet(msg);
     }, alertTime - now);      
 
-  console.log(format('[DEBUG] - Schedule {time} - "{msg}"', {
-      time : alertTime.format("LT"),
-      msg : msg}));
+  log.info({message: msg, alertime: alertTime}, 'Schduled message');
   }
 }
 
@@ -85,8 +87,7 @@ function genEventMsg(ev){
 }
 
 function sendIrc(msg){
-  console.log(format("[DEBUG] - Sending irc   - {msg}",{
-                      msg : msg}));
+  log.info({message: msg}, 'IRC message');
   var post_data = JSON.stringify({
       'message' : msg,
       'channel': config.rq.channel,
@@ -106,8 +107,7 @@ function sendIrc(msg){
 }
 
 function sendTweet(msg){
-  console.log(format("[DEBUG] - Sending tweet   - {msg}",{
-                      msg : msg}));
+  log.info({message: msg}, 'Twitter message');
   var twit = new twitter({
         consumer_key: config.twitter.consumer_key,
         consumer_secret: config.twitter.consumer_secret,
