@@ -9,11 +9,16 @@ var twitter = require('twitter');
 
 //ical.fromURL('http://256.makerslocal.org/calendar.ics', {}, parseData);
 parseData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
+console.log(format('Parsing ical @ {time}\n', {
+                    time : moment().format()
+                    })); 
 
 setInterval(function(){
-    console.log(util.format('Parsing ical @ %s\n', moment().format())); 
-    parseData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
-    //ical.fromURL('http://256.makerslocal.org/calendar.ics', {}, parseData);
+  console.log(format('Parsing ical @ {time}\n', {
+                      time : moment().format()
+                      })); 
+  parseData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
+  //ical.fromURL('http://256.makerslocal.org/calendar.ics', {}, parseData);
 }, config.pollInt);      
 
 function parseData(err, data){
@@ -35,9 +40,9 @@ function scheduleAlert(ev, alertTime){
       if (config.enableTwitter) sendTweet(msg);
     }, alertTime - now);      
 
-  console.log(util.format('[DEBUG] - Schedule %s - "%s"',
-      alertTime.format("LT"),
-      msg));
+  console.log(format('[DEBUG] - Schedule {time} - "{msg}"', {
+      time : alertTime.format("LT"),
+      msg : msg}));
   }
 }
 
@@ -80,7 +85,8 @@ function genEventMsg(ev){
 }
 
 function sendIrc(msg){
-  console.log("[DEBUG] - Sending irc   - "+msg);
+  console.log(format("[DEBUG] - Sending irc   - {msg}",{
+                      msg : msg}));
   var post_data = JSON.stringify({
       'message' : msg,
       'channel': config.rq.channel,
@@ -100,7 +106,8 @@ function sendIrc(msg){
 }
 
 function sendTweet(msg){
-  console.log("[DEBUG] - Sending tweet - "+msg);
+  console.log(format("[DEBUG] - Sending tweet   - {msg}",{
+                      msg : msg}));
   var twit = new twitter({
         consumer_key: config.twitter.consumer_key,
         consumer_secret: config.twitter.consumer_secret,
