@@ -44,7 +44,7 @@ function scheduleAlert(ev, alertTime){
       if (config.enableTwitter) sendTweet(msg);
     }, alertTime - now);      
 
-  log.info({message: msg, alertime: alertTime}, 'Schduled message');
+  log.info({message: msg, alertime: alertTime.format('LLL')}, 'Schduled message');
   }
 }
 
@@ -101,7 +101,7 @@ function sendIrc(msg){
         body: post_data
       },
       function (error, response, body) {
-        console.log(response.statusCode);
+        log.info({response : response.statusCode}, 'Redqueen response');
       } 
   );
 }
@@ -115,7 +115,7 @@ function sendTweet(msg){
         access_token_secret: config.twitter.access_token_secret
   });
   twit.updateStatus(msg, function (data) {
-    console.log(util.inspect(data));
+    log.info({response : util.inspect(data)}, 'Twitter response');
   });
 }
 

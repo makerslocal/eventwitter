@@ -1,5 +1,5 @@
 module.exports = {
-  enableIrc : false,
+  enableIrc : true,
   enableTwitter: false,
 
   pollInt : 60 * 60 * 1000, // 1 hour
@@ -38,9 +38,9 @@ module.exports = {
   },
 
   rq : {
-    channel  : '##rqtest',
+    channel  : '',
     isaction : false,
-    key      : '13371234'
+    key      : ''
   }, 
   
   twitter : {
@@ -48,7 +48,7 @@ module.exports = {
     consumer_secret     : '',
     access_token_key    : '',
     access_token_secret : ''
-  }
+}
 
 };
 
