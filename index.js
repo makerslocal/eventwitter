@@ -12,13 +12,13 @@ var twitter = require('twitter');
 var config = require('./config');
 
 log.info('Parse ical file');
-//ical.fromURL('http://256.makerslocal.org/calendar.ics', {}, parseData());
-parseData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
+ical.fromURL('http://256.makerslocal.org/calendar.ics', {}, parseData);
+//parseData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
 
 setInterval(function(){
   log.info('Parse ical file');
-  parseData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
-  //ical.fromURL('http://256.makerslocal.org/calendar.ics', {}, parseData());
+  //parseData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
+  ical.fromURL('http://256.makerslocal.org/calendar.ics', {}, parseData);
 }, config.pollInt);      
 
 function parseData(err, data){
