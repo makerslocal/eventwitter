@@ -11,17 +11,19 @@ var twitter = require('twitter');
 
 var config = require('./config');
 
-log.info('Parse ical file');
-ical.fromURL('http://256.makerslocal.org/calendar.ics', {}, parseData);
-//parseData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
+parseiCalFeed();
 
 setInterval(function(){
-  log.info('Parse ical file');
-  //parseData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
-  ical.fromURL('http://256.makerslocal.org/calendar.ics', {}, parseData);
-}, config.pollInt);      
+  parseiCalFeed();
+}, config.pollInt); 
 
-function parseData(err, data){
+function parseiCalFeed(){
+  log.info('Parse ical file');
+  ical.fromURL(config.icalurl, {}, parseiCalData);
+  //parseiCalData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
+}
+
+function parseiCalData(err, data){
   if(err){ 
     log.info(err);
     return; 
