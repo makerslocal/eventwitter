@@ -1,10 +1,9 @@
 var util = require('util');
 
 var _ = require('lodash');
-var bunyan = require('bunyan');
-var log = bunyan.createLogger({name: 'eventwitter'});
 var format = require("string-template");
 var ical = require('ical');
+var log = require('logule').init(module);
 var moment = require('moment');
 var request = require('request');
 var twitter = require('twitter');
@@ -19,8 +18,8 @@ setInterval(function(){
 
 function parseiCalFeed(){
   log.info('Parse ical file');
-  ical.fromURL(config.icalurl, {}, parseiCalData);
-  //parseiCalData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
+  //ical.fromURL(config.icalurl, {}, parseiCalData);
+  parseiCalData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
 }
 
 function parseiCalData(err, data){
@@ -46,7 +45,7 @@ function scheduleAlert(ev, alertTime){
       if (config.enableTwitter) sendTweet(msg);
     }, alertTime - now);      
 
-  log.info({message: msg, alertime: alertTime.format('LLL')}, 'Schduled message');
+  log.info('Schduled message: %j', {message: msg, alertime: alertTime.format('LLL')});
   }
 }
 
@@ -89,7 +88,7 @@ function genEventMsg(ev){
 }
 
 function sendIrc(msg){
-  log.info({message: msg}, 'IRC message');
+  log.info('IRC message: %j', {message: msg});
   var post_data = JSON.stringify({
       'message' : msg,
       'channel': config.rq.channel,
@@ -103,13 +102,13 @@ function sendIrc(msg){
         body: post_data
       },
       function (error, response, body) {
-        log.info({response : response.statusCode}, 'Redqueen response');
+        log.info('Redqueen response', {response : response.statusCode});
       } 
   );
 }
 
 function sendTweet(msg){
-  log.info({message: msg}, 'Twitter message');
+  log.info('Twitter message: %j', {message: msg});
   var twit = new twitter({
         consumer_key: config.twitter.consumer_key,
         consumer_secret: config.twitter.consumer_secret,
@@ -117,7 +116,7 @@ function sendTweet(msg){
         access_token_secret: config.twitter.access_token_secret
   });
   twit.updateStatus(msg, function (data) {
-    log.info({response : util.inspect(data)}, 'Twitter response');
+    log.info('Twitter response', {response : util.inspect(data)});
   });
 }
 
