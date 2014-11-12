@@ -98,7 +98,7 @@ function sendIrc(msg){
 
   request.post(
       { headers:{'Content-Type' : 'application/json'},
-        url:'https://restirc.tylercrumpton.com/relay',
+        url: config.rq.url,
         body: post_data
       },
       function (error, response, body) {

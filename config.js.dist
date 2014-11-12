@@ -39,6 +39,7 @@ module.exports = {
   },
 
   rq : {
+    url      : 'https://restirc.tylercrumpton.com/relay',
     channel  : '#makerslocal',
     isaction : false,
     key      : ''
