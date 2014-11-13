@@ -8,34 +8,40 @@ var moment = require('moment');
 var request = require('request');
 var twitter = require('twitter');
 
+// Load config file
 var config = require('./config');
 
+// Initial Parse of ical feed
 parseiCalFeed();
 
+// Parse ical feed at set interval
 setInterval(function(){
   parseiCalFeed();
 }, config.pollInt); 
 
+// Parse ical feed, and send data off
 function parseiCalFeed(){
   log.info('Parse ical file');
   //ical.fromURL(config.icalurl, {}, parseiCalData);
   parseiCalData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
 }
 
+// Parse events looking for the VEVENT type, send each to be scheduled if needed
 function parseiCalData(err, data){
   if(err){ 
     log.info(err);
     return; 
   }
   _.forEach(data, function(ev) {
-      if (ev.type == "VEVENT" ){
-        _.forEach(config.alertSchedule, function(alertSchedule) {
-          scheduleAlert(ev, moment(ev.start).subtract(alertSchedule));
-        });
-      }
+    if (ev.type == "VEVENT" ){
+      _.forEach(config.alertSchedule, function(alertSchedule) {
+        scheduleAlert(ev, moment(ev.start).subtract(alertSchedule));
+      });
+    }
   });
 }
 
+// Determine if ivents needs to be scheduled, and do it.
 function scheduleAlert(ev, alertTime){
   var now = moment();
   if (alertTime > now && alertTime - config.pollInt < now) {
@@ -49,6 +55,7 @@ function scheduleAlert(ev, alertTime){
   }
 }
 
+// Pick random string and generate message.
 function genEventMsg(ev){
   var hour = moment().add(1, 'hour');
   var week = moment().add(1, 'week');
@@ -56,6 +63,7 @@ function genEventMsg(ev){
   var eventEnd = moment(ev.end);
 
   if (eventStart.isBefore(hour)){
+    // _.smaple picks one random item from an array
     return format(_.sample(config.alertMessages.now), {
                   summary     : ev.summary,
                   url         : ev.url,
@@ -66,6 +74,7 @@ function genEventMsg(ev){
                   });
   }
   else if (eventStart.isBefore(week)){
+    // _.smaple picks one random item from an array
     return format(_.sample(config.alertMessages.week), {
                   summary     : ev.summary,
                   url         : ev.url,
@@ -76,6 +85,7 @@ function genEventMsg(ev){
                   });
   }
   else {
+    // _.smaple picks one random item from an array
     return format(_.sample(config.alertMessages.longer),{
                   summary     : ev.summary,
                   url         : ev.url,
@@ -87,6 +97,7 @@ function genEventMsg(ev){
   }
 }
 
+// Send IRC message.  Called from timeout in scheduleAlert.
 function sendIrc(msg){
   log.info('IRC message: %j', {message: msg});
   var post_data = JSON.stringify({
@@ -107,6 +118,7 @@ function sendIrc(msg){
   );
 }
 
+// Send Tweet message.  Called from timeout in scheduleAlert.
 function sendTweet(msg){
   log.info('Twitter message: %j', {message: msg});
   var twit = new twitter({
@@ -120,6 +132,7 @@ function sendTweet(msg){
   });
 }
 
+// A little debuging
 function printEvent(ev){
   console.log(util.format('%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n', 
     ev.summary,
