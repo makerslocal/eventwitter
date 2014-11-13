@@ -47,8 +47,8 @@ function scheduleAlert(ev, alertTime){
   if (alertTime > now && alertTime - config.pollInt < now) {
     var msg = genEventMsg(ev);
     setTimeout(function(){
-      if (config.enableIrc) sendIrc(msg);
-      if (config.enableTwitter) sendTweet(msg);
+      sendIrc(msg);
+      sendTweet(msg);
     }, alertTime - now);      
 
   log.info('Schduled message: %j', {message: msg, alertime: alertTime.format('LLL')});
@@ -99,6 +99,9 @@ function genEventMsg(ev){
 
 // Send IRC message.  Called from timeout in scheduleAlert.
 function sendIrc(msg){
+  if (!config.rq.enable) {
+    return;
+  }
   log.info('IRC message: %j', {message: msg});
   var post_data = JSON.stringify({
       'message' : msg,
@@ -120,6 +123,9 @@ function sendIrc(msg){
 
 // Send Tweet message.  Called from timeout in scheduleAlert.
 function sendTweet(msg){
+  if (!config.twitter.enable) {
+    return;
+  }
   log.info('Twitter message: %j', {message: msg});
   var twit = new twitter({
         consumer_key: config.twitter.consumer_key,

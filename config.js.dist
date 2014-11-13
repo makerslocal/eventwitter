@@ -1,7 +1,5 @@
 module.exports = {
   icalurl: 'http://256.makerslocal.org/calendar.ics',
-  enableIrc : true,
-  enableTwitter: true,
 
   pollInt : 60 * 60 * 1000, // 1 hour
 
@@ -39,6 +37,7 @@ module.exports = {
   },
 
   rq : {
+    enable   : true,
     url      : 'https://restirc.tylercrumpton.com/relay',
     channel  : '#makerslocal',
     isaction : false,
@@ -46,6 +45,7 @@ module.exports = {
   }, 
   
   twitter : {
+    enable              : true,
     consumer_key        : '',
     consumer_secret     : '',
     access_token_key    : '',
