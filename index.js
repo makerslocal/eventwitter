@@ -12,22 +12,22 @@ var twitter = require('twitter');
 var config = require('./config');
 
 // Initial Parse of ical feed
-parseiCalFeed();
+ParseiCalFeed();
 
 // Parse ical feed at set interval
 setInterval(function(){
-  parseiCalFeed();
+  ParseiCalFeed();
 }, config.pollInt); 
 
 // Parse ical feed, and send data off
-function parseiCalFeed(){
+function ParseiCalFeed(){
   log.info('Parse ical file');
-  //ical.fromURL(config.icalurl, {}, parseiCalData);
-  parseiCalData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
+  //ical.fromURL(config.icalurl, {}, ParseiCalData);
+  ParseiCalData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
 }
 
 // Parse events looking for the VEVENT type, send each to be scheduled if needed
-function parseiCalData(err, data){
+function ParseiCalData(err, data){
   if(err){ 
     log.info(err);
     return; 
@@ -35,20 +35,21 @@ function parseiCalData(err, data){
   _.forEach(data, function(ev) {
     if (ev.type == "VEVENT" ){
       _.forEach(config.alertSchedule, function(alertSchedule) {
-        scheduleAlert(ev, moment(ev.start).subtract(alertSchedule));
+        ScheduleAlert(ev, moment(ev.start).subtract(alertSchedule));
       });
     }
   });
 }
 
 // Determine if ivents needs to be scheduled, and do it.
-function scheduleAlert(ev, alertTime){
+function ScheduleAlert(ev, alertTime){
   var now = moment();
-  if (alertTime > now && alertTime - config.pollInt < now) {
-    var msg = genEventMsg(ev);
+  var isAlertable = (alertTime > now && alertTime - config.pollInt < now);
+  if (isAlertable) {
+    var msg = GenEventMsg(ev);
     setTimeout(function(){
-      sendIrc(msg);
-      sendTweet(msg);
+      SendIrc(msg);
+      SendTweet(msg);
     }, alertTime - now);      
 
   log.info('Schduled message: %j', {message: msg, alertime: alertTime.format('LLL')});
@@ -56,12 +57,13 @@ function scheduleAlert(ev, alertTime){
 }
 
 // Pick random string and generate message.
-function genEventMsg(ev){
+function GenEventMsg(ev){
   var hour = moment().add(1, 'hour');
   var week = moment().add(1, 'week');
   var eventStart = moment(ev.start);
   var eventEnd = moment(ev.end);
 
+  // Get message based on alerting happening now
   if (eventStart.isBefore(hour)){
     // _.smaple picks one random item from an array
     return format(_.sample(config.alertMessages.now), {
@@ -73,6 +75,7 @@ function genEventMsg(ev){
                   description : ev.description
                   });
   }
+  // Get message based on alerting happening within a week
   else if (eventStart.isBefore(week)){
     // _.smaple picks one random item from an array
     return format(_.sample(config.alertMessages.week), {
@@ -84,6 +87,7 @@ function genEventMsg(ev){
                   description : ev.description
                   });
   }
+  // Get message based on alerting happening after a week
   else {
     // _.smaple picks one random item from an array
     return format(_.sample(config.alertMessages.longer),{
@@ -97,13 +101,13 @@ function genEventMsg(ev){
   }
 }
 
-// Send IRC message.  Called from timeout in scheduleAlert.
-function sendIrc(msg){
+// Send IRC message.  Called from timeout in ScheduleAlert.
+function SendIrc(msg){
   if (!config.rq.enable) {
     return;
   }
   log.info('IRC message: %j', {message: msg});
-  var post_data = JSON.stringify({
+  var postData = JSON.stringify({
       'message' : msg,
       'channel': config.rq.channel,
       'isaction': config.rq.isaction,
@@ -113,7 +117,7 @@ function sendIrc(msg){
   request.post(
       { headers:{'Content-Type' : 'application/json'},
         url: config.rq.url,
-        body: post_data
+        body: postData
       },
       function (error, response, body) {
         log.info('Redqueen response', {response : response.statusCode});
@@ -121,8 +125,8 @@ function sendIrc(msg){
   );
 }
 
-// Send Tweet message.  Called from timeout in scheduleAlert.
-function sendTweet(msg){
+// Send Tweet message.  Called from timeout in ScheduleAlert.
+function SendTweet(msg){
   if (!config.twitter.enable) {
     return;
   }
