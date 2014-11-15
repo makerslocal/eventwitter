@@ -101,21 +101,22 @@ function GenEventMsg(message, ev){
 
 // Send IRC message.  Called from timeout in ScheduleAlert.
 function SendIrc(ev){
-  if (!config.rq.enable) {
+  var rq = config.redqueen;
+  if (!rq.enable) {
     return;
   }
-  var msg = GenEventMsg(config.rq.messages, ev);
+  var msg = GenEventMsg(rq.messages, ev);
   var postData = JSON.stringify({
       'message'  : msg,
-      'channel'  : config.rq.channel,
-      'isaction' : config.rq.isaction,
-      'key'      : config.rq.key
+      'channel'  : rq.channel,
+      'isaction' : rq.isaction,
+      'key'      : rq.key
   });
 
   log.info('IRC message: %j', {message: msg});
   request.post(
       { headers:{'Content-Type' : 'application/json'},
-        url: config.rq.url,
+        url: rq.url,
         body: postData
       },
       function (error, response, body) {
@@ -126,15 +127,16 @@ function SendIrc(ev){
 
 // Send Tweet message.  Called from timeout in ScheduleAlert.
 function SendTweet(ev){
-  if (!config.twitter.enable) {
+  var tw = config.twitter;
+  if (!tw.enable) {
     return;
   }
-  var msg = GenEventMsg(config.twitter.messages, ev);
+  var msg = GenEventMsg(tw.messages, ev);
   var twit = new twitter({
-        consumer_key        : config.twitter.consumer_key,
-        consumer_secret     : config.twitter.consumer_secret,
-        access_token_key    : config.twitter.access_token_key,
-        access_token_secret : config.twitter.access_token_secret
+        consumer_key        : tw.consumer_key,
+        consumer_secret     : tw.consumer_secret,
+        access_token_key    : tw.access_token_key,
+        access_token_secret : tw.access_token_secret
   });
   log.info('Twitter message: %j', {message: msg});
   twit.updateStatus(msg, function (data) {

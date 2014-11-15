@@ -10,7 +10,7 @@ module.exports = {
     { week  : 1 }
   ],
 
-  rq : {
+  redqueen : {
     enable   : true,
     url      : 'https://restirc.tylercrumpton.com/relay',
     channel  : '#makerslocal',
