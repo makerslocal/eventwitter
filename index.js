@@ -1,15 +1,14 @@
-var util = require('util');
+var util    = require('util');
 
-var _ = require('lodash');
-var format = require("string-template");
-var ical = require('ical');
-var log = require('logule').init(module);
-var moment = require('moment');
+var _       = require('lodash');
+var format  = require("string-template");
+var ical    = require('ical');
+var log     = require('logule').init(module);
+var moment  = require('moment');
 var request = require('request');
 var twitter = require('twitter');
 
-// Load config file
-var config = require('./config');
+var config  = require('./config');
 
 // Initial Parse of ical feed
 ParseiCalFeed();
@@ -58,10 +57,10 @@ function ScheduleAlert(ev, alertTime){
 
 // Pick random string and generate message.
 function GenEventMsg(ev){
-  var hour = moment().add(1, 'hour');
-  var week = moment().add(1, 'week');
+  var hour       = moment().add(1, 'hour');
+  var week       = moment().add(1, 'week');
   var eventStart = moment(ev.start);
-  var eventEnd = moment(ev.end);
+  var eventEnd   = moment(ev.end);
 
   // Get message based on alerting happening now
   if (eventStart.isBefore(hour)){
@@ -108,10 +107,10 @@ function SendIrc(msg){
   }
   log.info('IRC message: %j', {message: msg});
   var postData = JSON.stringify({
-      'message' : msg,
-      'channel': config.rq.channel,
-      'isaction': config.rq.isaction,
-      'key' : config.rq.key
+      'message'  : msg,
+      'channel'  : config.rq.channel,
+      'isaction' : config.rq.isaction,
+      'key'      : config.rq.key
   });
 
   request.post(
@@ -132,10 +131,10 @@ function SendTweet(msg){
   }
   log.info('Twitter message: %j', {message: msg});
   var twit = new twitter({
-        consumer_key: config.twitter.consumer_key,
-        consumer_secret: config.twitter.consumer_secret,
-        access_token_key: config.twitter.access_token_key,
-        access_token_secret: config.twitter.access_token_secret
+        consumer_key        : config.twitter.consumer_key,
+        consumer_secret     : config.twitter.consumer_secret,
+        access_token_key    : config.twitter.access_token_key,
+        access_token_secret : config.twitter.access_token_secret
   });
   twit.updateStatus(msg, function (data) {
     log.info('Twitter response', {response : util.inspect(data)});
