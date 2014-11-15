@@ -10,38 +10,37 @@ module.exports = {
     { week  : 1 }
   ],
 
-  alertMessages : {
-    // summary     : Event name
-    // url         : Url to wiki page
-    // start       : Event start time
-    // end         : Event end time
-    // location    : Event location, though most times it is undefined
-    // description : Event description, most times its the same as url
-
-    // alert msg for right now
-    now : [
-      "{summary} is starting right now! Check out {url} for more info.", 
-      "Better hurry up, {summary} is starting right now. {url}"
-    ],
-
-    // alert msg within the week, time in moment.calendar format
-    week : [       
-      "{summary} is happening {start}. Check out {url} for more info.",
-      "It's all happening! {summary} will start {start}. Visit {url} for more info."
-    ],
-
-    // alert msg for longer than a longer than a week, time in moment.format("l [at] LT") format              
-    longer : [ 
-      "{summary} is happening on {start}. Check out {url} for more info."
-    ]
-  },
-
   rq : {
     enable   : true,
     url      : 'https://restirc.tylercrumpton.com/relay',
     channel  : '#makerslocal',
     isaction : false,
-    key      : ''
+    key      : '',
+    messages :{
+      // summary     : Event name
+      // url         : Url to wiki page
+      // start       : Event start time
+      // end         : Event end time
+      // location    : Event location, though most times it is undefined
+      // description : Event description, most times its the same as url
+ 
+      // alert msg for right now
+      now : [
+        "{summary} is starting right now! Check out {url} for more info.", 
+         "Better hurry up, {summary} is starting right now. {url}"
+      ],
+
+      // alert msg within the week, time in moment.calendar format
+      week : [       
+        "{summary} is happening {start}. Check out {url} for more info.",
+         "It's all happening! {summary} will start {start}. Visit {url} for more info."
+      ],
+
+      // alert msg for longer than a longer than a week, time in moment.format("l [at] LT") format
+      longer : [ 
+        "{summary} is happening on {start}. Check out {url} for more info."
+      ]
+    }
   }, 
   
   twitter : {
@@ -49,8 +48,32 @@ module.exports = {
     consumer_key        : '',
     consumer_secret     : '',
     access_token_key    : '',
-    access_token_secret : ''
-  }
+    access_token_secret : '',
+    messages :{
+      // summary     : Event name
+      // url         : Url to wiki page
+      // start       : Event start time
+      // end         : Event end time
+      // location    : Event location, though most times it is undefined
+      // description : Event description, most times its the same as url
+ 
+      // alert msg for right now
+      now : [
+        "{summary} is starting right now! Check out {url} for more info.", 
+        "Better hurry up, {summary} is starting right now. {url}"
+      ],
 
+      // alert msg within the week, time in moment.calendar format
+      week : [       
+        "{summary} is happening {start}. Check out {url} for more info.",
+        "It's all happening! {summary} will start {start}. Visit {url} for more info."
+      ],
+
+      // alert msg for longer than a longer than a week, time in moment.format("l [at] LT") format
+      longer : [ 
+        "{summary} is happening on {start}. Check out {url} for more info."
+      ]
+    }
+  }
 };
 

@@ -45,18 +45,17 @@ function ScheduleAlert(ev, alertTime){
   var now = moment();
   var isAlertable = (alertTime > now && alertTime - config.pollInt < now);
   if (isAlertable) {
-    var msg = GenEventMsg(ev);
     setTimeout(function(){
-      SendIrc(msg);
-      SendTweet(msg);
+      SendIrc(ev);
+      SendTweet(ev);
     }, alertTime - now);      
 
-  log.info('Schduled message: %j', {message: msg, alertime: alertTime.format('LLL')});
+  log.info('Schduled message: %j', {ev: ev.summary, alertime: alertTime.format('LLL')});
   }
 }
 
 // Pick random string and generate message.
-function GenEventMsg(ev){
+function GenEventMsg(message, ev){
   var hour       = moment().add(1, 'hour');
   var week       = moment().add(1, 'week');
   var eventStart = moment(ev.start);
@@ -65,7 +64,7 @@ function GenEventMsg(ev){
   // Get message based on alerting happening now
   if (eventStart.isBefore(hour)){
     // _.smaple picks one random item from an array
-    return format(_.sample(config.alertMessages.now), {
+    return format(_.sample(message.now), {
                   summary     : ev.summary,
                   url         : ev.url,
                   start       : eventStart.calendar(),
@@ -77,7 +76,7 @@ function GenEventMsg(ev){
   // Get message based on alerting happening within a week
   else if (eventStart.isBefore(week)){
     // _.smaple picks one random item from an array
-    return format(_.sample(config.alertMessages.week), {
+    return format(_.sample(message.week), {
                   summary     : ev.summary,
                   url         : ev.url,
                   start       : eventStart.calendar(),
@@ -89,7 +88,7 @@ function GenEventMsg(ev){
   // Get message based on alerting happening after a week
   else {
     // _.smaple picks one random item from an array
-    return format(_.sample(config.alertMessages.longer),{
+    return format(_.sample(message.longer),{
                   summary     : ev.summary,
                   url         : ev.url,
                   start       : eventStart.format("l [at] LT"),
@@ -101,11 +100,11 @@ function GenEventMsg(ev){
 }
 
 // Send IRC message.  Called from timeout in ScheduleAlert.
-function SendIrc(msg){
+function SendIrc(ev){
   if (!config.rq.enable) {
     return;
   }
-  log.info('IRC message: %j', {message: msg});
+  var msg = GenEventMsg(config.rq.messages, ev);
   var postData = JSON.stringify({
       'message'  : msg,
       'channel'  : config.rq.channel,
@@ -113,6 +112,7 @@ function SendIrc(msg){
       'key'      : config.rq.key
   });
 
+  log.info('IRC message: %j', {message: msg});
   request.post(
       { headers:{'Content-Type' : 'application/json'},
         url: config.rq.url,
@@ -125,17 +125,18 @@ function SendIrc(msg){
 }
 
 // Send Tweet message.  Called from timeout in ScheduleAlert.
-function SendTweet(msg){
+function SendTweet(ev){
   if (!config.twitter.enable) {
     return;
   }
-  log.info('Twitter message: %j', {message: msg});
+  var msg = GenEventMsg(config.twitter.messages, ev);
   var twit = new twitter({
         consumer_key        : config.twitter.consumer_key,
         consumer_secret     : config.twitter.consumer_secret,
         access_token_key    : config.twitter.access_token_key,
         access_token_secret : config.twitter.access_token_secret
   });
+  log.info('Twitter message: %j', {message: msg});
   twit.updateStatus(msg, function (data) {
     log.info('Twitter response', {response : util.inspect(data)});
   });
