@@ -120,7 +120,9 @@ function SendIrc(ev){
         body: postData
       },
       function (error, response, body) {
-        log.info('Redqueen response', {response : response.statusCode});
+        if (response.statusCode != '200'){ 
+          log.error(util.inspect(response));
+        }
       } 
   );
 }
@@ -140,7 +142,9 @@ function SendTweet(ev){
   });
   log.info('Twitter message: %j', {message: msg});
   twit.updateStatus(msg, function (data) {
-    log.info('Twitter response', {response : util.inspect(data)});
+    if (!data.id){
+      log.error(util.inspect(data));
+    }
   });
 }
 
