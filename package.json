@@ -8,6 +8,7 @@
     "lodash": "2.4.1",
     "logule": "^2.0.1",
     "moment": "^2.8.3",
+    "pushbullet": "^1.4.2",
     "request": "^2.47.0",
     "string-template": "^0.2.0",
     "twitter": "^0.2.13"

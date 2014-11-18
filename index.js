@@ -1,14 +1,15 @@
-var util    = require('util');
+var util       = require('util');
 
-var _       = require('lodash');
-var format  = require("string-template");
-var ical    = require('ical');
-var log     = require('logule').init(module);
-var moment  = require('moment');
-var request = require('request');
-var twitter = require('twitter');
+var _          = require('lodash');
+var format     = require("string-template");
+var ical       = require('ical');
+var log        = require('logule').init(module);
+var moment     = require('moment');
+var PushBullet = require('pushbullet');
+var request    = require('request');
+var twitter    = require('twitter');
 
-var config  = require('./config');
+var config     = require('./config');
 
 // Initial Parse of ical feed
 ParseiCalFeed();
@@ -21,8 +22,8 @@ setInterval(function(){
 // Parse ical feed, and send data off
 function ParseiCalFeed(){
   log.info('Parse ical file');
-  ical.fromURL(config.icalurl, {}, ParseiCalData);
-  //ParseiCalData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
+  //ical.fromURL(config.icalurl, {}, ParseiCalData);
+  ParseiCalData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
 }
 
 // Parse events looking for the VEVENT type, send each to be scheduled if needed
@@ -32,7 +33,7 @@ function ParseiCalData(err, data){
     return; 
   }
   _.forEach(data, function(ev) {
-    if (ev.type == "VEVENT" ){
+    if (ev.type === "VEVENT" ){
       _.forEach(config.alertSchedule, function(alertSchedule) {
         ScheduleAlert(ev, moment(ev.start).subtract(alertSchedule));
       });
@@ -46,11 +47,12 @@ function ScheduleAlert(ev, alertTime){
   var isAlertable = (alertTime > now && alertTime - config.pollInt < now);
   if (isAlertable) {
     setTimeout(function(){
-      SendIrc(ev);
-      SendTweet(ev);
+      SendToIrc(ev);
+      SendToTweet(ev);
+      SendToPushbullet(ev);
     }, alertTime - now);      
 
-  log.info('Schduled message: %j', {ev: ev.summary, alertime: alertTime.format('LLL')});
+    log.info('Schduled message: %j', {ev: ev.summary, alertime: alertTime.format('LLL')});
   }
 }
 
@@ -100,11 +102,9 @@ function GenEventMsg(message, ev){
 }
 
 // Send IRC message.  Called from timeout in ScheduleAlert.
-function SendIrc(ev){
+function SendToIrc(ev){
   var rq = config.redqueen;
-  if (!rq.enable) {
-    return;
-  }
+  if (!rq.enable) { return; }
   var msg = GenEventMsg(rq.messages, ev);
   var postData = JSON.stringify({
       'message'  : msg,
@@ -128,11 +128,9 @@ function SendIrc(ev){
 }
 
 // Send Tweet message.  Called from timeout in ScheduleAlert.
-function SendTweet(ev){
+function SendToTweet(ev){
   var tw = config.twitter;
-  if (!tw.enable) {
-    return;
-  }
+  if (!tw.enable) { return; }
   var msg = GenEventMsg(tw.messages, ev);
   var twit = new twitter({
         consumer_key        : tw.consumer_key,
@@ -145,6 +143,16 @@ function SendTweet(ev){
     if (!data.id){
       log.error(util.inspect(data));
     }
+  });
+}
+
+function SendToPushbullet(ev){
+  var push = config.pushbullet;
+  var pusher = new PushBullet(push.api_key);
+  var msg = GenEventMsg(push.messages, ev);
+  pusher.note(push.target, 'Event', msg, function(error, response) {
+    if (error) { log.error(error); }
+    log.info(response);
   });
 }
 
