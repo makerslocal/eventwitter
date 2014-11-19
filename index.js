@@ -152,7 +152,6 @@ function SendToPushbullet(ev){
   var msg = GenEventMsg(push.messages, ev);
   pusher.note(push.target, 'Event', msg, function(error, response) {
     if (error) { log.error(error); }
-    log.info(response);
   });
 }
 

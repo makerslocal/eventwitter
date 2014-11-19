@@ -85,9 +85,7 @@ module.exports = {
   pushbullet : {
     enable : true,
     api_key : '',
-    target : [
-      { channel_tag : 'ml256' },
-    ],
+    target : { channel_tag : 'ml256' },
 
     messages :{
       // summary     : Event name
