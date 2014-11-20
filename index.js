@@ -64,7 +64,7 @@ function GenEventMsg(message, ev){
   var eventEnd   = moment(ev.end);
 
   // Get message based on alerting happening now
-  if (eventStart.isBefore(hour)){
+  if (eventStart.isBefore(hour, 'second')){
     // _.smaple picks one random item from an array
     return format(_.sample(message.now), {
                   summary     : ev.summary,
@@ -76,7 +76,7 @@ function GenEventMsg(message, ev){
                   });
   }
   // Get message based on alerting happening within a week
-  else if (eventStart.isBefore(week)){
+  else if (eventStart.isBefore(week, 'second')){
     // _.smaple picks one random item from an array
     return format(_.sample(message.week), {
                   summary     : ev.summary,
@@ -148,6 +148,7 @@ function SendToTweet(ev){
 
 function SendToPushbullet(ev){
   var push = config.pushbullet;
+  if (!push.enable) { return; }
   var pusher = new PushBullet(push.api_key);
   var msg = GenEventMsg(push.messages, ev);
   pusher.note(push.target, 'Event', msg, function(error, response) {
