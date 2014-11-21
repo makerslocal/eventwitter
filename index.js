@@ -22,8 +22,8 @@ setInterval(function(){
 // Parse ical feed, and send data off
 function ParseiCalFeed(){
   log.info('Parse ical file');
-  ical.fromURL(config.icalurl, {}, ParseiCalData);
-  //ParseiCalData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics'));
+  //ical.fromURL(config.icalurl, {}, ParseiCalData);
+  ParseiCalData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics.test'));
 }
 
 // Parse events looking for the VEVENT type, send each to be scheduled if needed
@@ -34,37 +34,44 @@ function ParseiCalData(err, data){
   }
   _.forEach(data, function(ev) {
     if (ev.type === "VEVENT" ){
-      _.forEach(config.alertSchedule, function(alertSchedule) {
-        ScheduleAlert(ev, moment(ev.start).subtract(alertSchedule));
+      _.forEach(config.alertSchedule, function(alertSchedule, index) {
+        var alertTime = moment(ev.start).subtract(alertSchedule);
+        alertable = IsAlertable(alertTime);
+        if (alertable){
+          _.extend(ev, config.alertMsg[index]);
+          ScheduleAlert(ev, alertTime);
+        }
       });
     }
   });
 }
 
+function IsAlertable(alertTime){
+  var now = moment();
+  var alertable = (alertTime > now && alertTime - config.pollInt < now);
+  return alertable;
+}
+
 // Determine if ivents needs to be scheduled, and do it.
 function ScheduleAlert(ev, alertTime){
-  var now = moment();
-  var isAlertable = (alertTime > now && alertTime - config.pollInt < now);
-  if (isAlertable) {
+    var now = moment();
     setTimeout(function(){
       SendToIrc(ev);
       SendToTweet(ev);
       SendToPushbullet(ev);
     }, alertTime - now);      
-
+    
+    console.log(ev);
     log.info('Schduled message: %j', {ev: ev.summary, alertime: alertTime.format('LLL')});
-  }
 }
 
 // Pick random string and generate message.
 function GenEventMsg(message, ev){
-  var hour       = moment().add(1, 'hour');
-  var week       = moment().add(1, 'week');
   var eventStart = moment(ev.start);
   var eventEnd   = moment(ev.end);
 
   // Get message based on alerting happening now
-  if (eventStart.isBefore(hour, 'second')){
+  if (ev.msg === 'now'){
     // _.smaple picks one random item from an array
     return format(_.sample(message.now), {
                   summary     : ev.summary,
@@ -76,7 +83,7 @@ function GenEventMsg(message, ev){
                   });
   }
   // Get message based on alerting happening within a week
-  else if (eventStart.isBefore(week, 'second')){
+  else if (ev.msg === 'week'){
     // _.smaple picks one random item from an array
     return format(_.sample(message.week), {
                   summary     : ev.summary,
