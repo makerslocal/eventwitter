@@ -1,4 +1,4 @@
-# Summery
+# Summary
 Nodejs script to tweet and redqueen messages from Makers Local 256  ical feed.
 
 ## Configure
