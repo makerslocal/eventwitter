@@ -22,8 +22,8 @@ setInterval(function(){
 // Parse ical feed, and send data off
 function ParseiCalFeed(){
   log.info('Parse ical file');
-  //ical.fromURL(config.icalurl, {}, ParseiCalData);
-  ParseiCalData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics.test'));
+  ical.fromURL(config.icalurl, {}, ParseiCalData);
+  //ParseiCalData('',ical.parseFile('/home/jimshoe/dev/makerslocal/eventwitter/calendar.ics.test'));
 }
 
 // Parse events looking for the VEVENT type, send each to be scheduled if needed
@@ -61,7 +61,6 @@ function ScheduleAlert(ev, alertTime){
       SendToPushbullet(ev);
     }, alertTime - now);      
     
-    console.log(ev);
     log.info('Schduled message: %j', {ev: ev.summary, alertime: alertTime.format('LLL')});
 }
 
