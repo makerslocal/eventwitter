@@ -9,7 +9,7 @@ var PushBullet = require('pushbullet');
 var request    = require('request');
 var twitter    = require('twitter');
 
-var config     = require('./config');
+var config     = require(process.argv[2]);
 
 // Initial Parse of ical feed
 ParseiCalFeed();
