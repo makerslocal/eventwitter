@@ -6,7 +6,7 @@ Move config.js.dist to config.js, then edit 'rq' and 'twitter' sections with you
 
 ## Run
 * ```node index /config/path```
-* ```docker run -v $(pwd)/config.js:/config.js -d --name="eventwitter" eventwitter /config.js```
+* ```docker run -v $(pwd)/config.js:/config.js -v /etc/localtime:/etc/localtime:ro -d --name="eventwitter" eventwitter /config.js```
 
 ## TODO
 * ~~Schedule alerts~~
