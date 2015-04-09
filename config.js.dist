@@ -18,7 +18,7 @@ module.exports = {
 
   redqueen : {
     enable   : true,
-    url      : 'https://crump.space/rq',
+    url      : 'https://crump.space/rq/relay',
     channel  : '#makerslocal',
     isaction : false,
     key      : '',
@@ -53,8 +53,8 @@ module.exports = {
         "Routine human-schedule analysis results: {summary} will be held on {start}. Source: {url}"
       ]
     }
-  }, 
-  
+  },
+
   twitter : {
     enable              : true,
     consumer_key        : '',
@@ -76,13 +76,13 @@ module.exports = {
       ],
 
       // alert msg within the week, time in moment.calendar format
-      week : [       
+      week : [
         "{summary} is happening {start}. Check out {url} for more info.",
         "It's all happening! {summary} will start {start}. Visit {url} for more info."
       ],
 
       // alert msg for longer than a longer than a week, time in moment.format("l [at] LT") format
-      longer : [ 
+      longer : [
         "{summary} is happening on {start}. Check out {url} for more info."
       ]
     }
