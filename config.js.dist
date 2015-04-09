@@ -18,7 +18,7 @@ module.exports = {
 
   redqueen : {
     enable   : true,
-    url      : 'https://restirc.tylercrumpton.com/relay',
+    url      : 'https://crump.space/rq',
     channel  : '#makerslocal',
     isaction : false,
     key      : '',

@@ -126,6 +126,10 @@ function SendToIrc(ev){
         body: postData
       },
       function (error, response, body) {
+        if (error){ 
+          log.error(util.inspect(error));
+          return;
+        }
         if (response.statusCode != '200'){ 
           log.error(util.inspect(response));
         }
