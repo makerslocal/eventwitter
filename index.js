@@ -8,8 +8,18 @@ var moment     = require('moment');
 var PushBullet = require('pushbullet');
 var request    = require('request');
 var twitter    = require('twitter');
+var argv       = require('minimist')(process.argv.slice(2));
 
-var config     = require(process.argv[2]);
+var config;
+if ("config" in argv) {
+  config = require(argv.config);
+  console.log("Loading custom config: " + argv.config);
+}
+else {
+  config = require('./config.js');
+  console.log('Loading default config.');
+}
+
 
 // Initial Parse of ical feed
 ParseiCalFeed();
