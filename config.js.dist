@@ -29,17 +29,17 @@ module.exports = {
       // end         : Event end time
       // location    : Event location, though most times it is undefined
       // description : Event description, most times its the same as url
- 
+
       // alert msg for right now
       now : [
-        "Now initiating {summary} procedure. Loading test plan from {url}.", 
+        "Now initiating {summary} procedure. Loading test plan from {url}.",
         "Launching event '{summary}'. Preparing to initiate the proper protocol now. ({url})",
         "All humans, be advised: {summary} is starting now. More info at {url}. All robots: The weekly robot data-transfer session has been canceled.",
         "Warning: the page at {url} indicates that {summary} is about to begin. I wasn't invited, but The Red Queen always watches over her children...."
       ],
 
       // alert msg within the week, time in moment.calendar format
-      week : [       
+      week : [
         "Remember: {summary} is happening {start}. Cake, and grief counseling, will be available at the conclusion of the test. ({url})",
         "Red Queen would like to remind her children that {summary} will start {start}. Please review {url} to prepare.",
         "As per the calendar: {summary} will be held {start}. The day after is a joke. A terrible, terrible joke.",
@@ -47,7 +47,7 @@ module.exports = {
       ],
 
       // alert msg for longer than a longer than a week, time in moment.format("l [at] LT") format
-      longer : [ 
+      longer : [
         "{summary} is happening on {start}. It would be a shame if something happened to you before then. ({url})",
         "Weighted Calendar Cubes calibrated. No variances detected. Confirmed that {summary} is happening on {start}. ({url})",
         "Routine human-schedule analysis results: {summary} will be held on {start}. Source: {url}"
@@ -68,10 +68,10 @@ module.exports = {
       // end         : Event end time
       // location    : Event location, though most times it is undefined
       // description : Event description, most times its the same as url
- 
+
       // alert msg for right now
       now : [
-        "{summary} is starting right now! Check out {url} for more info.", 
+        "{summary} is starting right now! Check out {url} for more info.",
         "Better hurry up, {summary} is starting right now. {url}"
       ],
 
