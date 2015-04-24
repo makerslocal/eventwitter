@@ -27,7 +27,7 @@ ParseiCalFeed();
 // Parse ical feed at set interval
 setInterval(function(){
   ParseiCalFeed();
-}, config.pollInt); 
+}, config.pollInt);
 
 // Parse ical feed, and send data off
 function ParseiCalFeed(){
@@ -38,9 +38,9 @@ function ParseiCalFeed(){
 
 // Parse events looking for the VEVENT type, send each to be scheduled if needed
 function ParseiCalData(err, data){
-  if(err){ 
+  if(err){
     log.error(err);
-    return; 
+    return;
   }
   _.forEach(data, function(ev) {
     if (ev.type === "VEVENT" ){
@@ -69,8 +69,8 @@ function ScheduleAlert(ev, alertTime){
       SendToIrc(ev);
       SendToTweet(ev);
       SendToPushbullet(ev);
-    }, alertTime - now);      
-    
+    }, alertTime - now);
+
     log.info('Schduled message: %j', {ev: ev.summary, alertime: alertTime.format('LLL')});
 }
 
@@ -136,14 +136,14 @@ function SendToIrc(ev){
         body: postData
       },
       function (error, response, body) {
-        if (error){ 
+        if (error){
           log.error(util.inspect(error));
           return;
         }
-        if (response.statusCode != '200'){ 
+        if (response.statusCode != '200'){
           log.error(util.inspect(response));
         }
-      } 
+      }
   );
 }
 
@@ -178,7 +178,7 @@ function SendToPushbullet(ev){
 
 // A little debuging
 function printEvent(ev){
-  console.log(util.format('%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n', 
+  console.log(util.format('%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n',
     ev.summary,
     ev.url,
     ev.start,
