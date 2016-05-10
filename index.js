@@ -6,9 +6,9 @@ var ical       = require('ical');
 var log        = require('logule').init(module);
 var moment     = require('moment');
 var PushBullet = require('pushbullet');
-var request    = require('request');
 var twitter    = require('twitter');
 var argv       = require('minimist')(process.argv.slice(2));
+var mqtt       = require('mqtt');
 
 var config;
 if ("config" in argv) {
@@ -66,7 +66,7 @@ function IsAlertable(alertTime){
 function ScheduleAlert(ev, alertTime){
     var now = moment();
     setTimeout(function(){
-      SendToIrc(ev);
+      SendToRQ(ev);
       SendToTweet(ev);
       SendToPushbullet(ev);
     }, alertTime - now);
@@ -118,33 +118,11 @@ function GenEventMsg(message, ev){
 }
 
 // Send IRC message.  Called from timeout in ScheduleAlert.
-function SendToIrc(ev){
+function SendToRQ(ev){
   var rq = config.redqueen;
   if (!rq.enable) { return; }
-  var msg = GenEventMsg(rq.messages, ev);
-  var postData = JSON.stringify({
-      'message'  : msg,
-      'channel'  : rq.channel,
-      'isaction' : rq.isaction,
-      'key'      : rq.key
-  });
-
-  log.info('IRC message: %j', {message: msg});
-  request.post(
-      { headers:{'Content-Type' : 'application/json'},
-        url: rq.url,
-        body: postData
-      },
-      function (error, response, body) {
-        if (error){
-          log.error(util.inspect(error));
-          return;
-        }
-        if (response.statusCode != '200'){
-          log.error(util.inspect(response));
-        }
-      }
-  );
+  var client = mqtt.connect(rq.mqtt);
+  client.publish('ml256/event/reminder', JSON.stringify(ev));
 }
 
 // Send Tweet message.  Called from timeout in ScheduleAlert.
@@ -159,10 +137,9 @@ function SendToTweet(ev){
         access_token_secret : tw.access_token_secret
   });
   log.info('Twitter message: %j', {message: msg});
-  twit.updateStatus(msg, function (data) {
-    if (!data.id){
-      log.error(util.inspect(data));
-    }
+  twit.post('statuses/update', {status: msg}, function (error, tweet, response) {
+    log.info(tweet);
+    log.info(response);
   });
 }
 

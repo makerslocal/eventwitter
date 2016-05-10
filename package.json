@@ -4,15 +4,16 @@
   "description": "ical to twitter, redqueen",
   "main": "index.js",
   "dependencies": {
-    "ical": "^0.3.1",
-    "lodash": "2.4.1",
+    "ical": "^0.5.0",
+    "lodash": "4.11.2",
     "logule": "^2.0.1",
     "minimist": "^1.1.1",
     "moment": "^2.8.3",
+    "mqtt": "^1.10.0",
     "pushbullet": "^1.4.2",
     "request": "^2.47.0",
-    "string-template": "^0.2.0",
-    "twitter": "^0.2.13"
+    "string-template": "^1.0.0",
+    "twitter": "^1.2.5"
   },
   "devDependencies": {},
   "scripts": {
