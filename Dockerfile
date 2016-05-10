@@ -1,13 +1,9 @@
-FROM node:0.10
+FROM node:4-slim
 
-RUN cd /tmp && \
-    wget --quiet https://github.com/makerslocal/eventwitter/archive/master.tar.gz -O eventwitter.tar.gz && \
-    tar -zxf eventwitter.tar.gz && \
-    rm -rf eventwitter.tar.gz && \
-    cd eventwitter-master && \
-    npm install
+COPY . /eventwitter
+RUN cd /eventwitter && npm install
 
-WORKDIR /tmp/eventwitter-master
+WORKDIR /eventwitter
 ENTRYPOINT ["node", "index.js"]
 
 
