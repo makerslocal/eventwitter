@@ -123,6 +123,7 @@ function SendToRQ(ev){
   if (!rq.enable) { return; }
   var client = mqtt.connect(rq.mqtt);
   client.publish('ml256/event/reminder', JSON.stringify(ev));
+  log.info('mqtt: ml256/event/reminder %j', {message: JSON.stringify(ev)});
 }
 
 // Send Tweet message.  Called from timeout in ScheduleAlert.
